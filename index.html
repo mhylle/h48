@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>statr - RPN Scientific Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="calculator">
+    <div class="display-bezel">
+      <div class="crt-overlay"></div>
+      <div class="display">
+        <div class="stack-line" id="stack-t"><span class="label">T:</span><span class="value">0</span></div>
+        <div class="stack-line" id="stack-z"><span class="label">Z:</span><span class="value">0</span></div>
+        <div class="stack-line" id="stack-y"><span class="label">Y:</span><span class="value">0</span></div>
+        <div class="stack-line" id="stack-x"><span class="label">X:</span><span class="value">0</span></div>
+        <div class="input-line" id="input-line"></div>
+        <div class="status-line" id="status-line"></div>
+      </div>
+    </div>
+    <div class="button-grid">
+      <!-- Row 1: Trigonometric -->
+      <button class="btn btn-scientific" data-action="sin">sin<span class="shortcut">s</span></button>
+      <button class="btn btn-scientific" data-action="cos">cos<span class="shortcut">c</span></button>
+      <button class="btn btn-scientific" data-action="tan">tan<span class="shortcut">t</span></button>
+      <button class="btn btn-scientific" data-action="asin">asin<span class="shortcut">S</span></button>
+      <button class="btn btn-scientific" data-action="acos">acos<span class="shortcut">C</span></button>
+      <button class="btn btn-scientific" data-action="atan">atan<span class="shortcut">T</span></button>
+
+      <!-- Row 2: Logarithmic / Power -->
+      <button class="btn btn-scientific" data-action="ln">ln<span class="shortcut">l</span></button>
+      <button class="btn btn-scientific" data-action="log10">log10<span class="shortcut">L</span></button>
+      <button class="btn btn-scientific" data-action="log2">log2</button>
+      <button class="btn btn-operation" data-action="power">x^y<span class="shortcut">^</span></button>
+      <button class="btn btn-scientific" data-action="sqrt">sqrt<span class="shortcut">q</span></button>
+      <button class="btn btn-operation" data-action="xrooty">x-root-y</button>
+
+      <!-- Row 3: Constants / Misc -->
+      <button class="btn btn-scientific" data-action="pi">pi<span class="shortcut">p</span></button>
+      <button class="btn btn-scientific" data-action="e">e<span class="shortcut">e</span></button>
+      <button class="btn btn-scientific" data-action="factorial">n!<span class="shortcut">!</span></button>
+      <button class="btn btn-operation" data-action="mod">mod<span class="shortcut">%</span></button>
+      <button class="btn btn-operation" data-action="and">AND<span class="shortcut">&</span></button>
+      <button class="btn btn-operation" data-action="or">OR<span class="shortcut">|</span></button>
+
+      <!-- Row 4: Bitwise / Stack -->
+      <button class="btn btn-operation" data-action="xor">XOR</button>
+      <button class="btn btn-operation" data-action="not">NOT<span class="shortcut">~</span></button>
+      <button class="btn btn-stack" data-action="swap">SWAP<span class="shortcut">x</span></button>
+      <button class="btn btn-stack" data-action="dup">DUP<span class="shortcut">d</span></button>
+      <button class="btn btn-stack" data-action="drop">DROP</button>
+      <button class="btn btn-stack" data-action="clear">CLEAR<span class="shortcut">Esc</span></button>
+
+      <!-- Row 5: 7 8 9 / +/- ENTER(tall) -->
+      <button class="btn btn-digit" data-action="digit" data-value="7">7</button>
+      <button class="btn btn-digit" data-action="digit" data-value="8">8</button>
+      <button class="btn btn-digit" data-action="digit" data-value="9">9</button>
+      <button class="btn btn-operation" data-action="divide">/</button>
+      <button class="btn btn-operation" data-action="negate">+/-<span class="shortcut">n</span></button>
+      <button class="btn btn-enter" data-action="enter">ENTER</button>
+
+      <!-- Row 6: 4 5 6 * EEX -->
+      <button class="btn btn-digit" data-action="digit" data-value="4">4</button>
+      <button class="btn btn-digit" data-action="digit" data-value="5">5</button>
+      <button class="btn btn-digit" data-action="digit" data-value="6">6</button>
+      <button class="btn btn-operation" data-action="multiply">*</button>
+      <button class="btn btn-operation" data-action="eex">EEX</button>
+
+      <!-- Row 7: 1 2 3 - BACK -->
+      <button class="btn btn-digit" data-action="digit" data-value="1">1</button>
+      <button class="btn btn-digit" data-action="digit" data-value="2">2</button>
+      <button class="btn btn-digit" data-action="digit" data-value="3">3</button>
+      <button class="btn btn-operation" data-action="subtract">-</button>
+      <button class="btn btn-operation" data-action="backspace">BACK</button>
+
+      <!-- Row 8: 0 . + -->
+      <button class="btn btn-digit btn-zero" data-action="digit" data-value="0">0</button>
+      <button class="btn btn-digit" data-action="decimal">.</button>
+      <button class="btn btn-operation" data-action="add">+</button>
+    </div>
+    <div class="history-panel" id="history-panel">
+      <div class="history-header">
+        <h3>History</h3>
+        <button class="btn-history-clear" id="history-clear">Clear</button>
+      </div>
+      <div class="history-list" id="history-list"></div>
+    </div>
+  </div>
+  <script src="calculator.js"></script>
+</body>
+</html>
