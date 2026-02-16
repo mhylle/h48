@@ -1,6 +1,6 @@
 # ADR-0001: Three-File Plain HTML/CSS/JS Architecture
 
-> **Quick Reference** | Status: Accepted | Date: 2026-02-16
+> **Quick Reference** | Status: Superseded by [ADR-0006](./ADR-0006-es-modules-dev-server.md) | Date: 2026-02-16
 > **Decision**: Use three-file architecture (index.html, style.css, calculator.js) with no frameworks or build tools.
 > **Context**: Need to choose web architecture for an HP-48-inspired RPN scientific calculator.
 > **Alternatives**: Single-file HTML, Multi-module ES modules, Framework-based (React/Vue)

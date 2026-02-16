@@ -1,6 +1,6 @@
 # ADR-0002: Internal Module Pattern for JS Organization
 
-> **Quick Reference** | Status: Accepted | Date: 2026-02-16 | Updated: 2026-02-16
+> **Quick Reference** | Status: Superseded by [ADR-0007](./ADR-0007-class-per-file-modules.md) | Date: 2026-02-16
 > **Decision**: Organize calculator.js into five named object modules: StackEngine, Operations, InputHandler, UIController, HistoryManager.
 > **Context**: Single JS file needs clear internal structure to manage RPN stack, 25+ operations, input state, UI binding, and history.
 > **Alternatives**: Flat procedural code, Class-based OOP, IIFE modules

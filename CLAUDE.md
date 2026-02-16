@@ -4,52 +4,90 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**statr** is an HP-48-inspired RPN scientific calculator — a single-page web app using plain HTML, CSS, and vanilla JavaScript. No frameworks, no build step, no bundler. Opens directly via `file://` protocol.
+**statr** is an HP-48-inspired RPN scientific calculator — a single-page web app using vanilla JavaScript ES modules. No frameworks, no build step, no bundler. Served via `npx serve`.
 
 ## Development
 
 ```bash
-# Run tests (Playwright-based, headless Chromium)
-npm install          # first time only — installs playwright
-node test-rpn-calculator.js
-
-# View the app — open index.html directly in a browser (no server needed)
+npm install                # first time only — installs playwright, vitest, serve
+npm start                  # serves on http://localhost:3000
+npm test                   # runs unit tests then e2e tests
+npm run test:unit          # vitest — src/**/*.spec.js
+npm run test:e2e           # playwright — test/e2e/*.e2e.js
+npx vitest run src/core/stack-engine.spec.js   # single unit test file
 ```
 
-There is no build, lint, or compile step. The three source files **are** the deliverable.
+There is no build, lint, or compile step.
 
 ## Architecture
 
-Three files, five internal modules (per ADR-0001 and ADR-0002):
+ES modules with one class per file (ADR-0006, ADR-0007). `src/main.js` is the composition root — it instantiates all classes, wires dependencies via constructor injection, and registers operations with ActionDispatcher.
 
-**`index.html`** — Structure and button grid with `data-action` / `data-value` attributes. All operations are visible buttons (no shift keys).
+```
+index.html                  Entry point, button grid (data-action/data-value)
+src/
+  main.js                   Composition root — wires all dependencies
+  core/
+    stack-engine.js          Fixed 4-level stack (X,Y,Z,T), T-register duplication
+    input-handler.js         Number entry buffer, decimal/EEX/negate, stack lift
+  operations/                7 classes, each receives StackEngine via constructor (ADR-0008)
+    arithmetic.js            add, subtract, multiply, divide
+    trigonometric.js         sin, cos, tan, asin, acos, atan
+    logarithmic.js           ln, log10, log2
+    power.js                 pow, sqrt, nthRoot
+    constant.js              pi, e
+    misc.js                  factorial, mod
+    bitwise.js               and, or, xor, not
+  ui/
+    action-dispatcher.js     Generic dispatch: registerOperation(), registerConstant(), registerAction()
+    display-renderer.js      Stack display rendering
+    button-handler.js        Click event delegation
+    keyboard-handler.js      Keydown handling
+    keyboard-map.js          KEYBOARD_MAP constant
+    format-value.js          Pure number formatting function
+  features/history/
+    history-store.js         Entry recording, localStorage persistence (100-entry cap)
+    history-renderer.js      History panel DOM rendering
+  styles/
+    index.css                @import aggregator
+    base.css, calculator.css, display.css, buttons.css, history.css, responsive.css
+test/e2e/
+  calculator.e2e.js          Playwright e2e tests
+```
 
-**`style.css`** — CRT green-phosphor aesthetic (scanlines, glow, flicker). 6-column CSS Grid for buttons.
+**Data flow**: Button click / keypress → `ActionDispatcher.dispatch()` → `HistoryStore.beforeAction()` → handler (commits input, calls operation, sets `isNewEntry`) → `HistoryStore.afterAction()` → `DisplayRenderer.update()`
 
-**`calculator.js`** — All logic, organized as five `const` object modules:
-
-| Module | Responsibility |
-|--------|---------------|
-| `StackEngine` | Fixed 4-level stack (X,Y,Z,T) with HP-48 T-register duplication semantics |
-| `Operations` | Pure math organized into 7 category sub-objects: `arithmetic`, `trig`, `log`, `power`, `constant`, `misc`, `bitwise` |
-| `InputHandler` | Number entry buffer, decimal/EEX/negate, stack lift tracking |
-| `HistoryManager` | Expression recording, localStorage persistence (key: `statr-history`, 100-entry cap), panel rendering |
-| `UIController` | Event delegation, keyboard mapping, display rendering, action dispatch |
-
-**Data flow**: Button click / keypress → `UIController.handleAction()` → `HistoryManager.beforeAction()` → dispatch function (commits input buffer, calls operation, sets `isNewEntry`) → `HistoryManager.afterAction()` → `UIController.updateDisplay()`
+**Dependency wiring** (in `main.js`):
+```
+StackEngine ← InputHandler
+StackEngine ← Operations (7 classes)
+StackEngine, InputHandler, formatValue ← DisplayRenderer
+InputHandler, HistoryStore, DisplayRenderer ← ActionDispatcher
+ActionDispatcher, KEYBOARD_MAP, InputHandler ← KeyboardHandler
+ActionDispatcher ← ButtonHandler
+HistoryStore → HistoryRenderer (via callback)
+```
 
 **Stack lift mechanism**: After ENTER or any operation, `isNewEntry = true`. The next digit triggers `InputHandler.liftStack()` which pushes a duplicate of X, then sets `liftPending = true` so that `commit()` overwrites X rather than pushing again.
+
+## Code Style (Angular-inspired, per ADR-0007)
+
+- **One class per file** — filename matches the class concept in `hyphen-case.js`
+- **Feature-based folders** — group by feature (`core/`, `operations/`, `ui/`, `features/history/`)
+- **Constructor injection** — dependencies passed in constructor, no global singletons
+- **Colocated tests** — `foo.spec.js` next to `foo.js` (unit tests via vitest)
+- **ES import/export** — named exports, no default exports
 
 ## Design Principles
 
 ### Single Responsibility Principle
-Every module, class, and function should have exactly one reason to change. If a function does two things, split it. If a module serves two purposes, extract one.
+Every module, class, and function should have exactly one reason to change.
 
 ### Separation of Concerns
-Keep distinct responsibilities in distinct layers/modules. Data access, business logic, and presentation should never be intermingled in the same function or class.
+Data access, business logic, and presentation should never be intermingled in the same function or class.
 
 ### Rule of 7
-No function should have more than 7 lines of logic (excluding signatures, docstrings, and blank lines). No class should have more than 7 public methods. No module should have more than 7 classes or top-level functions. When a boundary is exceeded, decompose. This is why `Operations` uses category sub-objects (ADR-0005).
+No function > 7 lines of logic. No class > 7 public methods. No module > 7 classes. When exceeded, decompose.
 
 ## Key Conventions
 
@@ -57,5 +95,6 @@ No function should have more than 7 lines of logic (excluding signatures, docstr
 - On error, operations push the original value back onto the stack before returning
 - All trig functions operate in radians
 - Bitwise operations truncate to 32-bit integers via `(x | 0)`
-- The `KEYBOARD_MAP` object centralizes all keyboard shortcuts; `e` key is context-sensitive (EEX during number entry, Euler's constant otherwise)
+- `KEYBOARD_MAP` centralizes all keyboard shortcuts; `e` key is context-sensitive (EEX during number entry, Euler's constant otherwise)
+- `ActionDispatcher.registerOperation()` wraps the common commit → call → isNewEntry pattern
 - ADRs live in `docs/decisions/` — consult `INDEX.md` before making architectural changes

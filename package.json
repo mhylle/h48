@@ -1,5 +1,17 @@
 {
+  "name": "statr",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npx serve .",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npx vitest run",
+    "test:e2e": "npx playwright test"
+  },
   "devDependencies": {
-    "playwright": "^1.58.2"
+    "@playwright/test": "^1.58.2",
+    "playwright": "^1.58.2",
+    "serve": "^14.2.4",
+    "vitest": "^3.0.0"
   }
 }

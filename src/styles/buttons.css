@@ -1,0 +1,87 @@
+/* === BUTTON GRID === */
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+
+/* === BUTTONS BASE === */
+
+.btn {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #cccccc;
+  padding: 0.5rem 0.25rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition:
+    background 0.1s,
+    transform 0.05s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+  background: #3a3a3a;
+}
+
+.btn:active {
+  transform: translateY(1px);
+  background: #333;
+}
+
+/* === BUTTON TYPES === */
+
+.btn-digit {
+  color: #cccccc;
+  font-size: 1rem;
+}
+
+.btn-operation {
+  color: #ff9933;
+}
+
+.btn-scientific {
+  color: #ff9933;
+  font-size: 0.7rem;
+}
+
+.btn-stack {
+  color: #33ff33;
+}
+
+/* === ENTER BUTTON (spans 2 rows) === */
+
+.btn-enter {
+  grid-column: 6;
+  grid-row: span 2;
+  background: #2a2a2a;
+  color: #33ff33;
+  font-size: 0.85rem;
+  border-color: #4a4a4a;
+}
+
+.btn-enter:hover {
+  background: #3a3a3a;
+}
+
+/* === ZERO BUTTON (spans columns) === */
+
+.btn-zero {
+  grid-column: span 2;
+}
+
+/* === KEYBOARD SHORTCUT HINTS === */
+
+.shortcut {
+  display: block;
+  font-size: 0.5rem;
+  color: #555;
+  margin-top: 2px;
+  font-weight: normal;
+}

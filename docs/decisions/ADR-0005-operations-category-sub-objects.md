@@ -1,6 +1,6 @@
 # ADR-0005: Category Sub-Objects Within Operations Module
 
-> **Quick Reference** | Status: Accepted | Date: 2026-02-16
+> **Quick Reference** | Status: Superseded by [ADR-0008](./ADR-0008-operation-classes.md) | Date: 2026-02-16
 > **Decision**: Split Operations into category sub-objects (arithmetic, trig, log, power, constant, misc, bitwise) each with <= 7 methods.
 > **Context**: Phase 3 adds 20 scientific operations to 4 existing arithmetic ops, exceeding Rule of 7 for a flat module.
 > **Alternatives**: Flat Operations with 24+ methods, separate top-level modules per category
